@@ -1,0 +1,3 @@
+# Direktori apps/ berisi repo git terpisah per aplikasi (web, api).
+# Repo workspace ini hanya melacak docs, spec, dan instruksi agent.
+apps/
