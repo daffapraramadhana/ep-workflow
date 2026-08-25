@@ -1,0 +1,15 @@
+# Reverse proxy + automatic TLS (Let's Encrypt) for the two prod hosts.
+# DOMAIN and ADMIN_EMAIL come from infra/.env.prod (loaded into the
+# caddy container via env_file: in docker-compose.prod.yml).
+
+{
+	email {$ADMIN_EMAIL}
+}
+
+app.{$DOMAIN} {
+	reverse_proxy web:3000
+}
+
+api.{$DOMAIN} {
+	reverse_proxy api:3001
+}

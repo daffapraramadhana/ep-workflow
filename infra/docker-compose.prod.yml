@@ -1,0 +1,73 @@
+# Production stack for a single VPS.
+#
+# Usage (always pass --env-file so DOMAIN/etc. are available both for
+# build-arg interpolation below AND for the env_file: directives, since
+# Compose only auto-loads a file literally named ".env"):
+#
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#
+# Required file: infra/.env.prod (not committed — see infra/README.md
+# for the full variable contract and how to generate it).
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: english_app
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d english_app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Not published to the host — only reachable on the internal compose
+    # network (by api, and by backup.sh via `docker compose exec`).
+
+  api:
+    build:
+      context: ../apps/api
+    restart: unless-stopped
+    env_file: .env.prod
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3001"
+
+  web:
+    build:
+      context: ../apps/web
+      args:
+        # Baked into the client bundle at build time — must be the public
+        # HTTPS URL Caddy will terminate for the api.
+        NEXT_PUBLIC_API_URL: https://api.${DOMAIN}
+    restart: unless-stopped
+    env_file: .env.prod
+    depends_on:
+      - api
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env.prod
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - api
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
