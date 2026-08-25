@@ -48,7 +48,7 @@ Required variables:
 | `JWT_SECRET` | api | Long random string. Rotating it invalidates all sessions (see §5). |
 | `ADMIN_EMAIL` | api, caddy | Seeded admin login; also used as the Let's Encrypt account contact email in `Caddyfile`. |
 | `ADMIN_PASSWORD` | api | Seeded admin login. |
-| `STORAGE_DRIVER` | api | Set to `s3` in production. |
+| `STORAGE_DRIVER` | api | Set to `s3` in production. If left `local` (or unset), uploaded media is written under the api container's `/app/storage`, which is persisted via the `mediadata` named volume declared in `docker-compose.prod.yml` (see §3). |
 | `S3_ENDPOINT` | api, backup.sh | e.g. `https://<accountid>.r2.cloudflarestorage.com` (Cloudflare R2) or any S3-compatible endpoint. |
 | `S3_BUCKET` | api | Bucket for uploaded media. |
 | `S3_ACCESS_KEY` | api, backup.sh | Mapped by `backup.sh` into `AWS_ACCESS_KEY_ID` for the `aws` CLI. |
@@ -75,10 +75,27 @@ down, logs, exec, …) — Compose only auto-loads a file literally named
 distinct from any dev `.env`.
 
 The `api` container's entrypoint (`apps/api/docker-entrypoint.sh`) runs
-`prisma migrate deploy` before starting the server, so every deploy
-that includes new migrations applies them automatically. `db` has a
-healthcheck (`pg_isready`) and `api` waits for it (`condition:
-service_healthy`) before starting.
+`prisma migrate deploy` and then the seed script (`node
+dist/prisma/seed.js`) before starting the server, so every deploy —
+including the very first one — both applies pending migrations and
+bootstraps the `Config` rows plus the `ADMIN_EMAIL`/`ADMIN_PASSWORD`
+admin login automatically. The seed is idempotent (upserts), so running
+it on every boot is safe; it also rotates the admin's password hash if
+`ADMIN_PASSWORD` changed since the last deploy. `db` has a healthcheck
+(`pg_isready`) and `api` waits for it (`condition: service_healthy`)
+before starting.
+
+Uploaded media (when `STORAGE_DRIVER=local`) persists across
+`up -d --build` via the `mediadata` named volume mounted at
+`/app/storage` in the `api` service (see §2).
+
+**Verify after the first deploy**: confirm the seed actually ran by
+logging in with `ADMIN_EMAIL`/`ADMIN_PASSWORD` against the live API —
+e.g. `curl -X POST https://api.<DOMAIN>/auth/login -H 'Content-Type:
+application/json' -d '{"email":"<ADMIN_EMAIL>","password":"<ADMIN_PASSWORD>"}'`
+should return a 201 with an `accessToken` and `"role":"ADMIN"`. If it
+403/401s, check `docker compose ... logs api` for errors from the seed
+step before assuming the deploy itself failed.
 
 Redeploy after a code change:
 
@@ -190,6 +207,13 @@ the first real production run).
   (`storage.module.spec.ts`); it was never exercised against a real S3
   / R2 bucket (none available here). The local driver's existing media
   e2e suite (`apps/api/test/media.e2e-spec.ts`) still passes unchanged.
+  `GET /media/:name` now branches on the active driver
+  (`MediaController#serve`, `apps/api/src/media/media.controller.ts`):
+  local still serves the file straight off disk; S3 redirects (302) to
+  `storage.getUrl(name)` instead of trying to read local disk. The
+  redirect branch is unit-tested with a mocked `StorageService`
+  (`apps/api/src/media/media.controller.spec.ts`) since there is no S3
+  bucket to exercise it against for real here.
 - The backup **dump/restore** path was tested for real against the
   local dev Postgres (see §4). The **S3 upload** leg of `backup.sh` was
   not — verify it on the first real production backup run.

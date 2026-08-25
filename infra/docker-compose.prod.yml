@@ -38,6 +38,18 @@ services:
         condition: service_healthy
     expose:
       - "3001"
+    volumes:
+      # Persists uploaded media across redeploys/container recreation when
+      # STORAGE_DRIVER=local. Mounted at /app/storage because the api
+      # image's WORKDIR is /app and LocalStorageService defaults STORAGE_DIR
+      # to "./storage" (i.e. /app/storage) when STORAGE_DIR is unset in
+      # .env.prod. If you set an absolute STORAGE_DIR in .env.prod instead,
+      # update this mount path to match. In production STORAGE_DRIVER is
+      # expected to be "s3" (see §2 of README.md), in which case this volume
+      # simply sits unused — it's here so switching back to the local
+      # driver (or running without S3 configured) doesn't silently lose
+      # uploads on every `up -d --build`.
+      - mediadata:/app/storage
 
   web:
     build:
@@ -81,3 +93,4 @@ volumes:
   db_data:
   caddy_data:
   caddy_config:
+  mediadata:
