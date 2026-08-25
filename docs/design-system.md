@@ -31,11 +31,16 @@ Didefinisikan sebagai CSS variables di `globals.css`, dipetakan ke Tailwind via 
   /* Netral */
   --ink:  #1F2937;  --muted: #6B7280;  --line: #E5E7EB;  --bg: #F8FAFC;
 
-  /* Identitas per-skill (progress, ikon skill) */
+  /* Identitas per-skill (chip/aksen di latar terang) */
   --skill-vocabulary: #4F46E5;  /* indigo */
   --skill-grammar:    #0EA5E9;  /* sky   */
   --skill-listening:  #F59E0B;  /* amber */
   --skill-reading:    #EC4899;  /* pink  */
+  /* Varian -deep: WAJIB untuk latar penuh-warna ber-teks putih (kontras ≥4.5:1, §7) */
+  --skill-vocabulary-deep: #4F46E5;  /* 6.3:1 */
+  --skill-grammar-deep:    #0369A1;  /* sky-700, ±5.9:1 */
+  --skill-listening-deep:  #B45309;  /* amber-700, ±4.85:1 */
+  --skill-reading-deep:    #BE185D;  /* pink-700, ±6.6:1 */
 }
 ```
 
