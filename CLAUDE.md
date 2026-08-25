@@ -33,7 +33,8 @@ Keputusan fondasi lengkap ada di `docs/superpowers/specs/2026-08-25-english-app-
 - [x] Spec fondasi — disetujui
 - [x] Rencana implementasi Fase 1 (docs/superpowers/plans/2026-08-25-fase-1-fondasi-dan-admin.md)
 - [x] **Fase 1 SELESAI** (25 Agu 2026): apps/api (schema 10 tabel, auth+undangan, importer soal+karyawan, media local/S3, CRUD admin, Dockerfile, seed-on-boot) + apps/web (login/guard/invite + 4 halaman admin, Dockerfile) + deliverables (template-soal-v1.xlsx + petunjuk, teruji round-trip) + infra (compose prod, Caddy, backup harian, runbook). Suite api: 43 unit + 36 e2e hijau.
-- [ ] Spec UI/UX (terpisah — sebelum Fase 2 minggu 3: app user)
-- [ ] Fase 2: kerangka app user + alur sesi (plan belum ditulis)
+- [x] Spec UI/UX + design system (docs/design-system.md — token, komponen, motion, bunyi, Lucide 2.25, mimic guide admin)
+- [x] **Fase 2 SELESAI** (26 Agu 2026): BE session engine (perakitan sesi beku + replay + penguatan, grading 3 tipe, XP config-driven + cap review, SM-2 post-increment, streak + freeze lazy WIB, journey/progress/report) + app user lengkap (onboarding, beranda hero, sesi chip-kata/feedback-sheet/media, perayaan, perjalanan, progress, profil) + admin restyle. Suite api: 55 unit + 85 e2e hijau. Verifikasi manual viewport = milik pemilik proyek (checklist: docs/superpowers/verifikasi/2026-fase2-checklist.md).
+- [ ] Fase 3 (belum direncanakan): dashboard manajemen + CSV export (minggu 7 jadwal klien), hardening backlog (ValidationPipe penuh, throttler report, freeze race di summary, isolasi DB test, PWA/dark mode)
 
 Catatan penting yang tidak boleh "dirapikan": `prisma` sengaja di dependencies (runtime butuh `migrate deploy` di container); belum pernah `docker build` di mesin ini (Docker tak terpasang) — build image pertama kali = verifikasi wajib sebelum deploy beneran.
