@@ -1,6 +1,7 @@
 # Reverse proxy + automatic TLS (Let's Encrypt) for the two prod hosts.
-# DOMAIN and ADMIN_EMAIL come from infra/.env.prod (loaded into the
-# caddy container via env_file: in docker-compose.prod.yml).
+# DOMAIN and ADMIN_EMAIL are passed to the caddy container via a scoped
+# environment: block in docker-compose.prod.yml (not the full .env.prod
+# env_file — caddy doesn't need DATABASE_URL/JWT_SECRET/S3 keys/etc.).
 
 {
 	email {$ADMIN_EMAIL}

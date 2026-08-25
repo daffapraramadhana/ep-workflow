@@ -1,8 +1,9 @@
 # Production stack for a single VPS.
 #
-# Usage (always pass --env-file so DOMAIN/etc. are available both for
-# build-arg interpolation below AND for the env_file: directives, since
-# Compose only auto-loads a file literally named ".env"):
+# Usage (always pass --env-file so DOMAIN/ADMIN_EMAIL/etc. are available
+# for variable interpolation below — web's build arg, caddy's scoped
+# environment: block — and for api's env_file: directive. Compose only
+# auto-loads a file literally named ".env", hence the explicit flag):
 #
 #   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
 #
@@ -46,7 +47,11 @@ services:
         # HTTPS URL Caddy will terminate for the api.
         NEXT_PUBLIC_API_URL: https://api.${DOMAIN}
     restart: unless-stopped
-    env_file: .env.prod
+    # No runtime env needed: NEXT_PUBLIC_API_URL is baked into the client
+    # bundle at build time via the build arg above, and web has no other
+    # server-side config. Deliberately no env_file here — it would expose
+    # DATABASE_URL/JWT_SECRET/S3 keys/ADMIN_PASSWORD to a container that
+    # never reads them.
     depends_on:
       - api
     expose:
@@ -58,7 +63,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    env_file: .env.prod
+    # Scoped to exactly what Caddyfile references (DOMAIN, ADMIN_EMAIL for
+    # the ACME account contact) — not the full .env.prod, which also holds
+    # DATABASE_URL/JWT_SECRET/S3 keys/ADMIN_PASSWORD that caddy never needs.
+    environment:
+      DOMAIN: ${DOMAIN}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
