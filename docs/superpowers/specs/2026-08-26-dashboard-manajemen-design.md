@@ -106,7 +106,7 @@ Pola halaman admin yang ada: loading skeleton, error inline + retry. Tabel koson
 
 ## 8. Pengujian
 
-- BE e2e (`monitoring.e2e-spec`): seed terkontrol per definisi — kasus batas: aktif tepat 7 hari lalu (masuk) vs 8 hari (keluar); on-track 5/7 vs 4/7; tren tepat +5pp (↗) vs +4.9pp (→); jendela <10 attempt → null; wrong-rate minimum 5 jawaban; prioritas status; RolesGuard 403 untuk USER.
+- BE e2e (`monitoring.e2e-spec`): seed terkontrol per definisi — kasus batas: aktif tepat 6 hari lalu (masuk) vs tepat 7 hari lalu (keluar) — jendela = hari ini dan 6 hari sebelumnya; on-track 5/7 vs 4/7; tren tepat +5pp (↗) vs +4.9pp (→); jendela <10 attempt → null; wrong-rate minimum 5 jawaban; prioritas status; RolesGuard 403 untuk USER.
 - Reports e2e: list filter status, PATCH resolve, USER → 403.
 - FE: verifikasi manual terskrip (desktop; admin tidak dipakai di HP pada pilot, cukup cek tidak pecah di 768px).
 
