@@ -1,4 +1,4 @@
-# Daily English Learning Platform — Spec Fondasi (Rilis 1)
+# Fluen (Daily English Learning Platform) — Spec Fondasi (Rilis 1)
 
 **Tanggal:** 25 Agustus 2026
 **Status:** Menunggu review

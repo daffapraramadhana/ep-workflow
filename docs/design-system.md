@@ -1,4 +1,4 @@
-# Design System — Daily English Learning Platform
+# Design System — Fluen
 
 **Status:** disetujui via mockup v2 (25 Agu 2026) · **Berlaku untuk:** app user (`apps/web` area `/`) dan admin dashboard (`/admin`)
 **Referensi visual:** mockup interaktif di `.superpowers/brainstorm/*/content/user-app-mockup-v2.html` (buka file-nya langsung di browser bila server companion mati)
@@ -19,8 +19,8 @@ Didefinisikan sebagai CSS variables di `globals.css`, dipetakan ke Tailwind via 
   --brand:       #4F46E5;  /* indigo — aksi utama, aksen */
   --brand-dark:  #3730A3;  /* border-bottom tombol, hover */
   --brand-soft:  #EEF2FF;  /* latar chip/seleksi */
-  --navy:        #1E1B4B;  /* hero gelap, nav mengambang */
-  --navy-2:      #312E81;  /* gradien hero: navy → navy-2 → #4338CA */
+  --navy:        #1E1B4B;  /* login & chrome desktop (sidebar) */
+  --navy-2:      #312E81;  /* gradien login/chrome: navy → navy-2 → #4338CA */
 
   /* Semantik */
   --good:        #22C55E;  --good-dark: #15803D;  --good-soft: #F0FDF4;
@@ -62,8 +62,8 @@ Label kecil (eyebrow) : 11px · w800 · uppercase · letter-spacing 1px · warna
 
 ```
 Radius : kartu 20-24px · tombol/input 12-16px · pill 999px · node path 50%
-Border : kartu 1.5px var(--line); elemen interaktif 2px
-Shadow : lembut & rendah — 0 2px 10px rgba(30,27,75,.05) untuk kartu;
+Border : kartu 1px var(--line); elemen interaktif 2px
+Shadow : lembut & rendah — 0 1px 6px rgba(30,27,75,.04) untuk kartu;
          0 10px 26px rgba(30,27,75,.4) hanya untuk elemen mengambang (nav pill)
 ```
 
@@ -92,17 +92,18 @@ Varian: `good` (hijau, konfirmasi/lanjut-setelah-benar), `danger` (merah), `ghos
 
 ### Kartu
 
-Putih, radius 20-24, border tipis, shadow lembut. Struktur: eyebrow label → judul → meta-chips → aksi.
+Putih, radius 20-24, border tipis, shadow lembut. Struktur: eyebrow label → judul → meta → aksi. Meta default = satu baris teks muted dengan pemisah `·` (`.card-meta`); meta-chip berwarna hanya bila butuh penekanan khusus — aksen warna disimpan untuk aksi.
 
 ### Pill & chip
 
-- **Stat pill** (hero gelap): latar `rgba(255,255,255,.12)`, border `rgba(255,255,255,.16)`, radius 999. Varian `hot` (streak): tint amber.
+- **Stat pill hero** (Beranda terang): pill soft tanpa border, radius 999 — streak/XP latar `--warn-soft` (ikon amber + angka ink 13px w800), freeze latar sky-soft `#E0F2FE` (ikon sky-700).
 - **Meta-chip** (di kartu): latar `--brand-soft` atau `--warn-soft`, radius 10, ikon + teks 12.5px w900.
 - **Chip kata** (susun kalimat): seperti tombol mini — border 2px, border-bottom 4px, tekan-turun; saat terpasang di zona jawaban: tint brand.
 
 ### Progress
 
-- **Ring** (target harian, % skill): SVG stroke-linecap round; ring target di hero memakai stroke amber `#FBBF24` di atas track `rgba(255,255,255,.18)`.
+- **Tile target harian** (hero Beranda): kotak rounded 20 latar `--brand-soft`, angka besar `--brand-dark` + label `--brand` + bar tipis putih/`--brand` (teks = shade latarnya sendiri, bukan abu). Target tercapai → varian tint hijau (`--good-soft`/`--good-dark`).
+- **Ring** (% skill, mini sidebar): SVG stroke-linecap round; ring % skill putih di baris skill, ring mini sidebar desktop amber di atas navy.
 - **Segmen sesi**: satu segmen per soal (bukan bar kontinu), tinggi 12px, radius 6, terisi `--good` dengan easing spring.
 - **Bar skill**: baris berwarna penuh per skill (warna dari token skill) + ikon di kiri + ring % putih di kanan.
 
@@ -112,7 +113,7 @@ Naik dari bawah (280ms, spring), menutupi area tombol. Latar `--good-soft`/`--ba
 
 ### Navigasi
 
-- **App user:** bottom nav mengambang — pill navy, radius 999, melayang 16px dari bawah, ikon + label 8.5px; item aktif = lingkaran brand. **Disembunyikan saat sesi berlangsung.** 4 item: Beranda · Perjalanan · Progress · Profil. Desktop: nav yang sama menjadi sidebar kiri.
+- **App user (mobile):** bottom nav mengambang — bar PUTIH radius 999, border 1px `--line`, shadow lembut, melayang 16px dari bawah. Item aktif = pill `--brand-soft` dengan ikon + label `--brand-dark`; item lain ikon `--muted` tanpa label. **Disembunyikan saat sesi berlangsung.** 4 item: Beranda · Perjalanan · Progress · Profil. Desktop: nav yang sama menjadi sidebar navy kiri (chrome gelap dipertahankan di desktop).
 - **Admin:** sidebar putih klasik (sudah ada) — adopsi token warna/radius/font, TIDAK memakai nav mengambang.
 
 ### Path node (Perjalanan)
@@ -142,7 +143,17 @@ WebAudio sintesis (tanpa file aset): benar = ding dua nada (660→880Hz, 300ms) 
 
 Aturan: **aktif default**, tombol mute selalu terlihat di header sesi, pilihan disimpan (localStorage + kolom preferensi user). Tidak ada bunyi di luar sesi. Admin app: tanpa bunyi sama sekali.
 
-## 5. Ikon
+## 5. Logo & ikon
+
+### Logo (brand mark)
+
+**Fluen** — toga + buku terbuka + dua gelembung percakapan. Warna mark berdiri sendiri, di luar palet token: emas `#CBA62D`/`#C09A22`, hijau `#7CAB4E`, oranye `#DD5B21`, teal `#1D6A8C`, ungu `#7B3F9D`.
+
+Garis putih antar bentuk adalah **bagian dari mark**, bukan latar — jadi logo selalu berdiri di atas permukaan terang. Di atas navy (sidebar desktop) wajib memakai tile putih radius 11–12; teal & ungu terlalu gelap untuk berdiri langsung di sana.
+
+Sumber: `src/components/logo.tsx` (komponen React) dan `src/app/icon.svg` (favicon, versi dengan latar putih membulat) — **duplikat yang harus diubah bersamaan**. Setelah mengubah `icon.svg`, regenerate `favicon.ico` (16/32/48) + `apple-icon.png` (180) dengan sharp; lihat `apps/web/README.md`.
+
+### Ikon UI
 
 **Library: [Lucide](https://lucide.dev) (`lucide-react`).** Satu library untuk kedua app — jangan campur dengan library lain.
 
@@ -178,7 +189,7 @@ Admin **mengadopsi fondasi, bukan teatrikalnya**:
 |---|---|
 | Semua token warna, radius, font Nunito, spacing | Bottom nav mengambang |
 | Tombol chunky untuk CTA utama (Import, Simpan, Terbitkan) | Bunyi & confetti |
-| Kartu + eyebrow label + meta-chip | Hero gelap penuh (cukup header putih dengan stat pill versi terang) |
+| Kartu + eyebrow label + meta-chip | Hero typographic Beranda (admin cukup heading halaman biasa) |
 | Pill status: DRAFT abu · LIVE hijau-soft · RETIRED merah-soft | Feedback sheet (admin pakai inline alert biasa) |
 | Ikon Lucide, stroke 2.25 | Path node |
 | Baris tabel: hover `--brand-soft`, radius pada container | |
