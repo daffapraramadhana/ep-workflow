@@ -54,6 +54,7 @@ Required variables:
 | `S3_ACCESS_KEY` | api, backup.sh | Mapped by `backup.sh` into `AWS_ACCESS_KEY_ID` for the `aws` CLI. |
 | `S3_SECRET_KEY` | api, backup.sh | Mapped by `backup.sh` into `AWS_SECRET_ACCESS_KEY`. |
 | `S3_PUBLIC_URL` | api | Public base URL media links are built from: `getUrl(name) = "${S3_PUBLIC_URL}/${name}"`. |
+| `GROQ_API_KEY` | api | Speech-to-text (speaking drill, tipe soal `UCAPAN`). Wajib bila fitur speaking dipakai; tanpa ini endpoint `/session/:id/speak` gagal. |
 | `WEB_ORIGIN` | api | `https://app.<DOMAIN>` — used for the API's CORS allow-list. |
 | `DOMAIN` | web (build arg), caddy | Bare domain, e.g. `example.com`. Caddy serves `app.<DOMAIN>` and `api.<DOMAIN>`. |
 | `BACKUP_BUCKET` | backup.sh | Bucket (can be the same as `S3_BUCKET` or separate) backups are pushed to, under `db/`. |
