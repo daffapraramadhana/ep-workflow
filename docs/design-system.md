@@ -1,9 +1,26 @@
-# Design System — Fluen
+# Design System — Velora
 
 **Status:** disetujui via mockup v2 (25 Agu 2026) · **Berlaku untuk:** app user (`apps/web` area `/`) dan admin dashboard (`/admin`)
 **Referensi visual:** mockup interaktif di `.superpowers/brainstorm/*/content/user-app-mockup-v2.html` (buka file-nya langsung di browser bila server companion mati)
 
-Arah: **playful-professional** — struktur dan interaksi bergaya game (chunky, bulat, feedback instan), kulit tetap pantas dipresentasikan ke manajemen. Tanpa maskot, tanpa ilustrasi karakter; kepribadian datang dari **warna, gerak, dan bunyi**.
+Arah: **playful-professional** — struktur dan interaksi bergaya game (chunky, bulat, feedback instan), kulit tetap pantas dipresentasikan ke manajemen. Kepribadian datang dari **maskot Velora, warna, gerak, dan bunyi**.
+
+## Pembaruan learner — 14 September 2026
+
+Arah terbaru: **simple, mature, character-led**. Ketentuan di bagian ini menggantikan chrome/nav dan hero learner lama di bawah; admin dan auth tetap memakai fondasi sebelumnya. Implementasi override ada di `apps/web/src/app/learner.css`, dibatasi `.learner-ui`.
+
+- Beranda memiliki satu kartu belajar utama: materi berikutnya/sesi tertunda, satu CTA, maskot, dan target harian. Latihan berbicara serta percakapan AI menjadi pilihan sekunder.
+- Maskot resmi ditampilkan tanpa bingkai berat. Warna karakter memberi kehangatan di atas latar netral `#f8f9fc`, ink `#25273b`, muted `#686c80`, dan garis `#e6e8ef`. Indigo tetap warna aksi; hijau hanya untuk keberhasilan.
+- XP, streak, target, dan kalender menggunakan data API. Tidak menambahkan leaderboard, hadiah, atau progres rekaan. Setelah target tercapai, latihan tambahan bersifat opsional.
+- Mobile (revisi 15 September 2026): kembali ke navigasi pill mengambang sebelumnya, label hanya pada tab aktif, dengan jarak safe-area dan target sentuh minimal 44px. Desktop tetap sidebar putih 216px, konten utama maksimal 700px; rail 260px mulai viewport 1200px.
+- Animasi pill mobile: highlight bergeser dan segmen aktif melebar dalam 180ms ease-out, label fade 120ms, feedback tekan ikon 120ms. Lebar luar tetap agar navigasi tidak meloncat. State mengikuti pathname (termasuk Back), tanpa animasi geser halaman. Reduced motion menonaktifkan seluruh transisi ini.
+- Revisi 15 September 2026: rail kanan hanya di Beranda. Perjalanan dan Profil memakai satu kolom terpusat; kalender streak dan total pencapaian tampil langsung di halaman Progress pada semua ukuran layar.
+- Perjalanan dan Progress memakai `LearningCompanion`: maskot resmi, bubble pendamping, kartu lavender ringan, serta ringkasan data asli. Perjalanan menampilkan materi berikutnya dan daftar langkah berurutan per topik; status selesai/aktif/terkunci tetap mengikuti API. Progress memakai kartu kemampuan putih dengan bar indigo, label akurasi jawaban pertama, jumlah sampel, kalender mingguan, dan ringkasan percakapan. Data kosong tidak diganti persentase palsu. Angka XP, materi selesai, dan streak terbaik tampil satu kali di hero Progress.
+- Identitas produk menjadi **Velora**; nama tampilan dan metadata memakai `src/lib/brand.ts`. Bentuk logo serta maskot dipertahankan. Nama repository, database, dan field `fluen_*` pada kontrak integrasi suara tetap kompatibel dengan konfigurasi lama.
+- Onboarding memakai pilihan radio native, consent eksplisit, dan maskot pendamping. Selebrasi memakai ringkasan hasil nyata, confetti satu kali, serta penghormatan pada reduced motion.
+- Fokus keyboard terlihat, target sentuh CTA minimal 52px, progres memakai elemen native, dan kondisi gagal/menunggu/kosong tetap menyediakan petunjuk yang jelas.
+
+Acuan prinsip: [Duolingo home screen](https://blog.duolingo.com/new-duolingo-home-screen-design/) untuk satu langkah belajar yang jelas dan [brand imagery](https://design.duolingo.com/identity/imagery) untuk karakter yang mendukung pengalaman, bukan menyalin visual produk.
 
 ---
 
@@ -145,9 +162,15 @@ Aturan: **aktif default**, tombol mute selalu terlihat di header sesi, pilihan d
 
 ## 5. Logo & ikon
 
+### Maskot
+
+Maskot Velora adalah buku terbuka 3D bertoga emas dengan dua sayap gelembung percakapan. Ia berperan sebagai pendamping belajar, bukan kontrol UI: tampil pada sapaan Beranda, perkenalan onboarding, serta momen perayaan/empty state yang relevan. Jangan memakai maskot sebagai ikon tombol, status, atau menggantikan ikon Lucide.
+
+Sumber aset resmi: `public/mascot/velora-mascot.webp`, selalu dipanggil melalui `src/components/mascot.tsx`. Gaya aset turunan wajib tetap 3D lembut, pencahayaan studio hangat dari kiri-atas, dan palet logo. Gunakan latar transparan, jangan menambah teks ke dalam gambar, jangan meregangkan proporsi, dan jangan mencampur pose dari keluarga ilustrasi lain.
+
 ### Logo (brand mark)
 
-**Fluen** — toga + buku terbuka + dua gelembung percakapan. Warna mark berdiri sendiri, di luar palet token: emas `#CBA62D`/`#C09A22`, hijau `#7CAB4E`, oranye `#DD5B21`, teal `#1D6A8C`, ungu `#7B3F9D`.
+**Velora** — toga + buku terbuka + dua gelembung percakapan. Warna mark berdiri sendiri, di luar palet token: emas `#CBA62D`/`#C09A22`, hijau `#7CAB4E`, oranye `#DD5B21`, teal `#1D6A8C`, ungu `#7B3F9D`.
 
 Garis putih antar bentuk adalah **bagian dari mark**, bukan latar — jadi logo selalu berdiri di atas permukaan terang. Di atas navy (sidebar desktop) wajib memakai tile putih radius 11–12; teal & ungu terlalu gelap untuk berdiri langsung di sana.
 

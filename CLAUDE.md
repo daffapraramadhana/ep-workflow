@@ -17,7 +17,7 @@ english-app/        ← repo workspace (ini)
 
 ## Konteks produk (ringkas)
 
-**Fluen** — platform belajar bahasa Inggris harian untuk karyawan. Rilis 1: Rp 8 jt fixed, 40 hari kerja / 8 minggu, solo. Pilot 20–50 user. Konten (soal) dari tim klien via template spreadsheet + importer.
+**Velora** (sebelumnya Fluen) — platform belajar bahasa Inggris harian untuk karyawan. Rilis 1: Rp 8 jt fixed, 40 hari kerja / 8 minggu, solo. Pilot 20–50 user. Konten (soal) dari tim klien via template spreadsheet + importer.
 
 Keputusan fondasi lengkap ada di `docs/superpowers/specs/2026-08-25-english-app-foundation-design.md`. Intinya yang tidak boleh dilanggar:
 

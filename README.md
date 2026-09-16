@@ -1,4 +1,4 @@
-# Fluen — Workspace
+# Velora — Workspace
 
 Platform belajar bahasa Inggris harian untuk karyawan: sesi pendek bergaya game (feedback instan, XP, streak) untuk membentuk kebiasaan belajar, plus dashboard admin untuk mengelola konten dan memantau aktivitas.
 
