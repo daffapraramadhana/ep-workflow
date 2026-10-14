@@ -17,7 +17,7 @@ english-app/        ← repo workspace (ini)
 
 ## Konteks produk (ringkas)
 
-**Velora** (sebelumnya Fluen) — platform belajar bahasa Inggris harian untuk karyawan. Rilis 1: Rp 8 jt fixed, 40 hari kerja / 8 minggu, solo. Pilot 20–50 user. Konten (soal) dari tim klien via template spreadsheet + importer.
+**samitaGo** (sebelumnya Velora, sebelumnya Fluen) — platform belajar bahasa Inggris harian untuk karyawan, dengan maskot pendamping bernama **Mita**. Nama tampilan + nama maskot terpusat di `apps/web/src/lib/brand.ts` (`APP_NAME`, `MASCOT_NAME`); field `fluen_*` di kontrak voice dan nama repo/DB sengaja tidak diubah. Rilis 1: Rp 8 jt fixed, 40 hari kerja / 8 minggu, solo. Pilot 20–50 user. Konten (soal) dari tim klien via template spreadsheet + importer.
 
 Keputusan fondasi lengkap ada di `docs/superpowers/specs/2026-08-25-english-app-foundation-design.md`. Intinya yang tidak boleh dilanggar:
 

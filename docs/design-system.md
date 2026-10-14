@@ -1,9 +1,9 @@
-# Design System — Velora
+# Design System — samitaGo
 
 **Status:** disetujui via mockup v2 (25 Agu 2026) · **Berlaku untuk:** app user (`apps/web` area `/`) dan admin dashboard (`/admin`)
 **Referensi visual:** mockup interaktif di `.superpowers/brainstorm/*/content/user-app-mockup-v2.html` (buka file-nya langsung di browser bila server companion mati)
 
-Arah: **playful-professional** — struktur dan interaksi bergaya game (chunky, bulat, feedback instan), kulit tetap pantas dipresentasikan ke manajemen. Kepribadian datang dari **maskot Velora, warna, gerak, dan bunyi**.
+Arah: **playful-professional** — struktur dan interaksi bergaya game (chunky, bulat, feedback instan), kulit tetap pantas dipresentasikan ke manajemen. Kepribadian datang dari **maskot Mita, warna, gerak, dan bunyi**.
 
 ## Pembaruan learner — 14 September 2026
 
@@ -16,7 +16,7 @@ Arah terbaru: **simple, mature, character-led**. Ketentuan di bagian ini menggan
 - Animasi pill mobile: highlight bergeser dan segmen aktif melebar dalam 180ms ease-out, label fade 120ms, feedback tekan ikon 120ms. Lebar luar tetap agar navigasi tidak meloncat. State mengikuti pathname (termasuk Back), tanpa animasi geser halaman. Reduced motion menonaktifkan seluruh transisi ini.
 - Revisi 15 September 2026: rail kanan hanya di Beranda. Perjalanan dan Profil memakai satu kolom terpusat; kalender streak dan total pencapaian tampil langsung di halaman Progress pada semua ukuran layar.
 - Perjalanan dan Progress memakai `LearningCompanion`: maskot resmi, bubble pendamping, kartu lavender ringan, serta ringkasan data asli. Perjalanan menampilkan materi berikutnya dan daftar langkah berurutan per topik; status selesai/aktif/terkunci tetap mengikuti API. Progress memakai kartu kemampuan putih dengan bar indigo, label akurasi jawaban pertama, jumlah sampel, kalender mingguan, dan ringkasan percakapan. Data kosong tidak diganti persentase palsu. Angka XP, materi selesai, dan streak terbaik tampil satu kali di hero Progress.
-- Identitas produk menjadi **Velora**; nama tampilan dan metadata memakai `src/lib/brand.ts`. Bentuk logo serta maskot dipertahankan. Nama repository, database, dan field `fluen_*` pada kontrak integrasi suara tetap kompatibel dengan konfigurasi lama.
+- Identitas produk menjadi **samitaGo** (sebelumnya Velora, sebelumnya Fluen) dengan maskot bernama **Mita**; nama tampilan, metadata, dan nama maskot memakai `src/lib/brand.ts` (`APP_NAME`, `MASCOT_NAME`). Bentuk logo serta maskot dipertahankan. Nama repository, database, dan field `fluen_*` pada kontrak integrasi suara tetap kompatibel dengan konfigurasi lama.
 - Onboarding memakai pilihan radio native, consent eksplisit, dan maskot pendamping. Selebrasi memakai ringkasan hasil nyata, confetti satu kali, serta penghormatan pada reduced motion.
 - Fokus keyboard terlihat, target sentuh CTA minimal 52px, progres memakai elemen native, dan kondisi gagal/menunggu/kosong tetap menyediakan petunjuk yang jelas.
 
@@ -143,16 +143,36 @@ Lingkaran 64px (aktif: 78px + pulse ring), border-bottom 5px gelap (rasa 3D sama
 
 | Kejadian | Durasi | Easing |
 |---|---|---|
-| Tombol ditekan | 60ms | linear |
+| Tombol ditekan | 60ms | linear (hanya `transform` + `border-bottom-width`, bukan `all`) |
 | Feedback sheet naik | 280ms | cubic-bezier(.3,1.3,.5,1) — spring ringan |
 | Segmen progress terisi | 500ms | cubic-bezier(.3,1.4,.5,1) |
 | Ring target terisi | 1s | ease |
 | Node pulse | 1.6s loop | ease |
-| Shake (terkunci/invalid) | 300ms | keyframe ±5px |
+| Shake jawaban salah (opsi/chip/isian) | 280ms | 4 segmen ±6px/4px, `--ease-smooth-out` (transitions.dev #12) |
+| Shake node terkunci | 300ms | keyframe ±5px |
+| Soal baru masuk | 250ms | geser 16px dari kanan + fade, `--ease-smooth-out` |
+| Dialog konfirmasi | 250ms (backdrop 150ms) | scale .96 → 1 + fade dari tengah |
+| Toast muncul | 350ms | turun 16px + fade + blur 2px; hilang instan |
+| Warna state opsi/chip | 150ms | ease |
 | XP count-up | ~700ms | interval linear |
 | Confetti | 2.6s | linear fall + rotate |
 
 Aturan: gerak hanya untuk **umpan balik dan perayaan**, tidak pernah untuk dekorasi idle (kecuali pulse node aktif). Hormati `prefers-reduced-motion`: matikan confetti, pulse, dan count-up (tampilkan nilai akhir langsung).
+
+Token gerak (`--duration-*`, `--ease-smooth-out`, `--scale-*`, `--blur-small`, `--shake-*`) ada di `:root` globals.css, sesuai skala transitions.dev. Animasi masuk memakai `@starting-style` (tanpa JS). Hover yang menggeser elemen dibungkus `@media (hover: hover) and (pointer: fine)`.
+
+**Maskot hidup** (`MascotStage`, `src/components/mascot-stage.tsx`) — memakai 15 pose PNG yang sudah ada, tanpa aset atau library baru:
+
+| Kejadian | Gerak |
+|---|---|
+| Maskot muncul | naik 8px + scale .92 → 1, 400ms |
+| Idle (Beranda, pendamping, login, onboarding, ngobrol) | "napas" naik 5px + miring 1°, loop 4s; bayangan lantai mengecil sinkron |
+| Pointer di atas maskot (khusus mouse) | condong 3D maks 12° mengikuti kursor, kembali 700ms |
+| Tap maskot (Beranda/pendamping) | squash & stretch 420ms + ganti pose (cross-blur 250ms) |
+| Feedback benar / salah | pose `cheerful` loncat / `thinking` geleng, 520ms setelah sheet naik |
+| Sesi selesai | pose `celebrating` (milestone: `achieving`) meletup dari burst cahaya, teks naik bertahap 40ms |
+
+Pose per state: Beranda `default` → `daily-streak` saat target tercapai; onboarding `welcome` → `excited`; ngobrol `speaking` → `thinking` → `proud`. Gerak dekoratif ini pengecualian sadar atas aturan "tanpa dekorasi idle": amplitudonya kecil dan semuanya mati di `prefers-reduced-motion`.
 
 ## 4. Bunyi (khusus app user)
 
@@ -164,13 +184,13 @@ Aturan: **aktif default**, tombol mute selalu terlihat di header sesi, pilihan d
 
 ### Maskot
 
-Maskot Velora adalah buku terbuka 3D bertoga emas dengan dua sayap gelembung percakapan. Ia berperan sebagai pendamping belajar, bukan kontrol UI: tampil pada sapaan Beranda, perkenalan onboarding, serta momen perayaan/empty state yang relevan. Jangan memakai maskot sebagai ikon tombol, status, atau menggantikan ikon Lucide.
+Maskot samitaGo bernama **Mita**: buku terbuka 3D bertoga emas dengan dua sayap gelembung percakapan. Ia berperan sebagai pendamping belajar, bukan kontrol UI: tampil pada sapaan Beranda, perkenalan onboarding (Mita memperkenalkan namanya di langkah 1), serta momen perayaan/empty state yang relevan. Jangan memakai maskot sebagai ikon tombol, status, atau menggantikan ikon Lucide.
 
-Sumber aset resmi: `public/mascot/velora-mascot.webp`, selalu dipanggil melalui `src/components/mascot.tsx`. Gaya aset turunan wajib tetap 3D lembut, pencahayaan studio hangat dari kiri-atas, dan palet logo. Gunakan latar transparan, jangan menambah teks ke dalam gambar, jangan meregangkan proporsi, dan jangan mencampur pose dari keluarga ilustrasi lain.
+Sumber aset resmi: `public/mascot/mita.webp`, selalu dipanggil melalui `src/components/mascot.tsx`. Gaya aset turunan wajib tetap 3D lembut, pencahayaan studio hangat dari kiri-atas, dan palet logo. Gunakan latar transparan, jangan menambah teks ke dalam gambar, jangan meregangkan proporsi, dan jangan mencampur pose dari keluarga ilustrasi lain.
 
 ### Logo (brand mark)
 
-**Velora** — toga + buku terbuka + dua gelembung percakapan. Warna mark berdiri sendiri, di luar palet token: emas `#CBA62D`/`#C09A22`, hijau `#7CAB4E`, oranye `#DD5B21`, teal `#1D6A8C`, ungu `#7B3F9D`.
+**samitaGo** — toga + buku terbuka + dua gelembung percakapan. Warna mark berdiri sendiri, di luar palet token: emas `#CBA62D`/`#C09A22`, hijau `#7CAB4E`, oranye `#DD5B21`, teal `#1D6A8C`, ungu `#7B3F9D`.
 
 Garis putih antar bentuk adalah **bagian dari mark**, bukan latar — jadi logo selalu berdiri di atas permukaan terang. Di atas navy (sidebar desktop) wajib memakai tile putih radius 11–12; teal & ungu terlalu gelap untuk berdiri langsung di sana.
 
