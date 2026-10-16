@@ -192,6 +192,50 @@ the first real production run).
    again. There's no dual-secret grace period in this design; rotate
    during a low-traffic window and expect a wave of re-logins.
 
+## 5b. Audio TTS (Kokoro) — rilis pertama & pemeliharaan
+
+Audio bahasa Inggris (listening, "Dengarkan contoh", 🔊 di bab modul) adalah
+file MP3 yang dibuat server dengan Kokoro (spec
+`docs/superpowers/specs/2026-10-16-audio-tts-design.md`). Model dipanggang ke
+image saat `docker build` (`TTS_MODEL_DIR=/app/tts-models`), jadi runtime tidak
+butuh internet. Image api kini `node:22-bookworm-slim` (bukan Alpine).
+
+**Rilis pertama (anggap produksi sudah dipakai learner):**
+
+1. Backup DB dulu (`./backup.sh`, lihat §4).
+2. `docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build api`
+   — entrypoint menjalankan migrasi (`TtsClip`, `Item.ttsText`) dan seed config
+   (`TTS_ENABLED=1`, `TTS_MAX_PARALLEL=1`, `TTS_IDLE_UNLOAD_MINUTES=10`).
+3. Adopsi audio seeder lama (sekali saja):
+   ```bash
+   docker compose --env-file .env.prod -f docker-compose.prod.yml exec api node dist/src/tts/cli/adopt-seed-audio.js
+   ```
+   Harus berakhir `0 dipertahankan (gagal)`. Soal yang gagal tetap memakai file
+   `.m4a` lamanya — tidak ada soal yang jadi bisu. Jalankan ulang aman.
+4. Buat semua audio di muka:
+   ```bash
+   docker compose --env-file .env.prod -f docker-compose.prod.yml exec api node dist/src/tts/cli/backfill.js
+   ```
+   Harus berakhir `0 gagal`. (Lokal: 208 klip ±5 menit di Mac M-series; VPS
+   bisa 2–4× lebih lambat.)
+5. Pantau RAM: `docker stats` saat backfill — proses api naik ±450 MB selama
+   model termuat, lalu turun lagi ±10 menit setelah sintesis terakhir.
+   **Catat angka RSS nyata di sini setelah rilis pertama.**
+
+**Rollback / saklar darurat:**
+
+- Masalah CPU/RAM: set config `TTS_ENABLED=0` (tabel `Config`). Klip yang sudah
+  jadi tetap diputar; frasa/contoh ucapan yang belum punya file jatuh ke suara
+  browser. Berlaku ≤60 dtk (cache config).
+- Kembali ke image lama: pulihkan DB dari backup langkah 1 (kolom `mediaFile`
+  lama kembali); file `.m4a` lama tidak dihapus oleh adopsi.
+
+**Kapan menjalankan backfill lagi:** setelah impor spreadsheet besar atau seed
+modul baru. Tanpa backfill pun audio tetap dibuat saat pertama diputar (user
+pertama menunggu ±1–3 dtk per kalimat). Bisa dibatasi:
+`node dist/src/tts/cli/backfill.js --code EFT-2` (prefix kode lesson) atau
+`--slug eftl-2` (prefix slug modul).
+
 ## 6. Known limitations / honest verification notes (Task 15)
 
 - Docker is not installed in the environment this stack was authored
@@ -203,6 +247,13 @@ the first real production run).
   environment (`which hadolint` → not found), so no automated
   Dockerfile linting ran either — treat both Dockerfiles as
   inspection-reviewed, not build-verified, until the first real deploy.
+- **Audio TTS (16 Okt 2026):** image api pindah ke `node:22-bookworm-slim` dan
+  memanggang model Kokoro saat build — juga belum pernah di-`docker build`.
+  Verifikasi wajib sebelum deploy: `docker build` api sukses (langkah
+  `prefetch-model.js` mengunduh ±90 MB dari Hugging Face), lalu di container
+  `GET /tts/<id>.mp3` → 200 `audio/mpeg`, dan ukur RSS saat/sesudah backfill.
+  Di mesin dev sudah terbukti: `npm run build` + `prefetch-model.js` ke
+  `TTS_MODEL_DIR` kosong → sukses (88 MB, 24 kHz).
 - The S3 driver (`apps/api/src/storage/s3.storage.ts`) was verified by
   type-checking, and by a unit test on the driver-selection logic
   (`storage.module.spec.ts`); it was never exercised against a real S3
