@@ -1,6 +1,6 @@
 # Petunjuk Pengisian Template Soal
 
-Panduan ini menjelaskan cara mengisi `template-soal-v1.xlsx`. File ini akan diimpor langsung ke sistem, jadi ikuti aturan di bawah agar proses impor berjalan lancar.
+Panduan ini menjelaskan cara mengisi `template-soal-v2.xlsx` (file `template-soal-v1.xlsx` yang lama tetap bisa diimpor). File ini akan diimpor langsung ke sistem, jadi ikuti aturan di bawah agar proses impor berjalan lancar.
 
 ## Konsep Lesson
 
@@ -49,6 +49,21 @@ Contoh:
 Jika soal butuh audio atau gambar (misalnya soal `listening`): **upload dulu file media ke admin**, baru tulis nama file-nya **persis sama** (termasuk huruf besar/kecil dan ekstensi) pada kolom `media_file`. Contoh: `audio_001.mp3`.
 
 Jika soal tidak butuh media, kosongkan kolom ini. Jika nama file di kolom `media_file` belum diunggah ke sistem, baris tersebut akan gagal diimpor (error "belum diunggah").
+
+## Audio Suara AI (`tts_text`)
+
+Daripada merekam dan mengunggah file audio, Anda bisa menulis teks yang akan **dibacakan otomatis oleh suara AI** di kolom `tts_text`. Cocok untuk soal `listening`.
+
+- **Satu suara (narasi):** tulis saja kalimatnya. Contoh: `Our first stop is the Sultan's Palace. We will arrive in about thirty minutes.`
+- **Percakapan dua orang:** tulis satu kalimat per baris dengan format `Nama: kalimat` (tekan Alt+Enter di Excel untuk baris baru). Maksimal **2 pembicara**; masing-masing mendapat suara berbeda. Contoh:
+  ```
+  Rina: Good afternoon! How was your flight?
+  Mr. Lee: It was long, but comfortable.
+  ```
+- Maksimal **600 karakter**.
+- Untuk soal `ucapan`, audio contoh "Dengarkan contoh" dibuat otomatis dari kolom `answer`. Isi `tts_text` hanya bila bacaannya perlu berbeda dari tulisan.
+- Jika kolom `media_file` juga diisi, file audio yang diunggah yang dipakai; `tts_text` diabaikan.
+- Mengimpor ulang dengan template lama (tanpa kolom `tts_text`) **tidak** menghapus teks audio yang sudah ada. Kolom `tts_text` yang dikosongkan akan menghapusnya.
 
 ## Kolom Lain
 
