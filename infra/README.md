@@ -254,6 +254,15 @@ butuh internet. Image api kini `node:22-bookworm-slim` (bukan Alpine).
   attempt, sesi, streak, dan XP sejak deploy ikut hilang — bertentangan dengan
   aturan fondasi "attempt dicatat selamanya".
 
+**Staging → prod dengan bucket MinIO yang sama (`ep-app`):** nama klip
+content-addressed (`tts-<hash teks+suara+versi mesin>.mp3`), jadi kalimat yang
+sama = file yang sama di kedua environment. Prod tetap butuh langkah 1–4 di atas
+(DB prod punya tabel `TtsClip` sendiri), tetapi backfill **memakai ulang** file
+yang sudah dibuat staging tanpa sintesis — keluarannya
+`… dibuat, N dipakai ulang dari storage, 0 gagal`, jauh lebih cepat. Jangan
+pernah menghapus `tts-*.mp3` dari bucket dengan anggapan itu milik staging saja —
+prod memakai file yang sama.
+
 **Kapan menjalankan backfill lagi:** setelah impor spreadsheet besar atau seed
 modul baru. Tanpa backfill pun audio tetap dibuat saat pertama diputar (user
 pertama menunggu ±1–3 dtk per kalimat). Bisa dibatasi:
