@@ -221,14 +221,38 @@ butuh internet. Image api kini `node:22-bookworm-slim` (bukan Alpine).
 5. Pantau RAM: `docker stats` saat backfill — proses api naik ±450 MB selama
    model termuat, lalu turun lagi ±10 menit setelah sintesis terakhir.
    **Catat angka RSS nyata di sini setelah rilis pertama.**
+   Perintah `exec … backfill.js` / `adopt-seed-audio.js` berjalan di proses
+   Node **terpisah** yang memuat modelnya sendiri: selama CLI jalan, RAM bisa
+   naik ±450 MB lagi di atas proses api.
+6. Cek image: `docker compose … exec api ls node_modules/onnxruntime-node/bin/napi-v3/linux/x64`
+   tidak boleh berisi `libonnxruntime_providers_cuda.so` (Dockerfile memasang
+   `ONNXRUNTIME_NODE_INSTALL_CUDA=skip`). Catat ukuran image di sini.
 
 **Rollback / saklar darurat:**
 
 - Masalah CPU/RAM: set config `TTS_ENABLED=0` (tabel `Config`). Klip yang sudah
   jadi tetap diputar; frasa/contoh ucapan yang belum punya file jatuh ke suara
-  browser. Berlaku ≤60 dtk (cache config).
-- Kembali ke image lama: pulihkan DB dari backup langkah 1 (kolom `mediaFile`
-  lama kembali); file `.m4a` lama tidak dihapus oleh adopsi.
+  browser. Berlaku ≤60 dtk (cache config). Catatan: soal listening yang klipnya
+  **belum** pernah dibuat tidak punya cadangan suara browser (bisu) — jalankan
+  backfill sebelum mematikan saklar bila memungkinkan.
+- Kembali ke image lama **tanpa** kehilangan data learner: image lama tetap jalan
+  dengan kolom `Item.ttsText` dan tabel `TtsClip` tambahan (diabaikan). Yang perlu
+  dipulihkan hanya `mediaFile` soal yang diadopsi — file `.m4a` lama tidak dihapus
+  adopsi. Jalankan di Postgres:
+  ```sql
+  UPDATE "Item" i
+  SET "mediaFile" = lower(l.code) || '-' || lpad(i."order"::text, 2, '0') || '.m4a'
+  FROM "Lesson" l
+  WHERE l.id = i."lessonId"
+    AND i."ttsText" IS NOT NULL AND i."mediaFile" IS NULL
+    AND l.code IN ('DC-104','WC-204','PE-304','CMP-210','EFT-109');
+  ```
+  (Daftar kode = lesson seeder yang punya audio lama; cek dulu dengan `SELECT`
+  yang sama. Soal yang `ttsText`-nya diisi admin sendiri tidak punya `.m4a` lama
+  — jangan ikut di-update.)
+- **Restore DB penuh dari backup langkah 1 hanya pilihan terakhir**: semua
+  attempt, sesi, streak, dan XP sejak deploy ikut hilang — bertentangan dengan
+  aturan fondasi "attempt dicatat selamanya".
 
 **Kapan menjalankan backfill lagi:** setelah impor spreadsheet besar atau seed
 modul baru. Tanpa backfill pun audio tetap dibuat saat pertama diputar (user
