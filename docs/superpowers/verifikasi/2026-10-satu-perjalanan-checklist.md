@@ -13,6 +13,7 @@ Butuh: api + web dari branch `feat/satu-perjalanan`, migrasi `20261023090000_sat
 - [ ] Hanya satu kartu lanjut; kartu "Lanjutkan modul" tidak ada.
 - [ ] Bila langkah berikutnya bab modul: hero "Bab N · {judul}", deskripsi "Unit N · {modul}. Baca materinya dulu, lalu kerjakan kuis bab.", tombol → halaman bab.
 - [ ] Mulai kuis bab, kembali ke Beranda → "Lanjutkan sesimu" dengan judul bab; tombol kembali ke kuis yang sama.
+- [ ] Mulai Latihan berbicara, tinggalkan di tengah, kembali ke Beranda → "Lanjutkan belajar" membuka sesi berbicara yang sama (bukan kuis bab).
 
 ## Data staging/produksi (setelah deploy)
 - [ ] Karyawan MENENGAH yang sudah mengerjakan EFTL 3/5 tidak ditarik mundur: langkah berikutnya sama seperti sebelum deploy, langkah EFTL yang selesai tetap ✓.
