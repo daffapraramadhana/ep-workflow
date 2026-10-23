@@ -191,7 +191,7 @@ Detail visual = mockup admin. Sidebar KONTEN: **Modul** (`BookOpenText`) di urut
 
 - Seeder baru `apps/api/prisma/seed-module-complaints.ts` (`npm run seed:module-complaints`), **create-only** (modul by slug, bab by moduleId+order dilewati bila sudah ada — edit admin aman; pola sama dengan `seed-complaints.ts`).
 - 1 modul MENENGAH·B1, LIVE, 11 bab sesuai alur CMP: kosakata → menyampaikan keluhan → formal vs nonformal → menggali informasi → minta maaf & empati → terima kasih → janji tindakan → konfirmasi penyelesaian → email (reading) → telepon (listening) → ucapan.
-- Bab n ditautkan ke lesson `CMP-20n`/`CMP-21n` yang sudah ada (by code; dilewati dengan peringatan bila lesson tidak ditemukan). Akibatnya ke-11 lesson keluar dari Perjalanan Menengah (tersisa WC-201..204) — **disengaja**.
+- Bab n ditautkan ke lesson `CMP-20n`/`CMP-21n` yang sudah ada (by code; dilewati dengan peringatan bila lesson tidak ditemukan). Akibatnya ke-11 lesson keluar dari Perjalanan Menengah (tersisa WC-201..204) — **disengaja**. *(Digantikan 23 Okt 2026 oleh `2026-10-23-satu-perjalanan-design.md`: semua modul LIVE kini menjadi unit di Perjalanan; unit Complaints ditaruh di akhir MENENGAH.)*
 - Isi bacaan tiap bab (pengantar, `phrases`, `tip`, `dialog`) ditulis ulang dalam konteks kerja umum; ungkapan boleh diambil dari modul SKKNI BHS.IS03.004.01, teks dialog/penjelasan modul **tidak disalin**. Body di-parse dengan `parseChapter` yang sama; seeder gagal keras bila ada error parse.
 - Seeder dijalankan sesudah `seed:complaints`.
 
