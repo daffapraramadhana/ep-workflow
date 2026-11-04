@@ -37,7 +37,7 @@ Butuh: api + web dari branch `feat/course`, migrasi course sudah diterapkan (ter
 - [ ] Course orang lain / slug ngawur → kartu error dengan tautan ke daftar course.
 
 ## Menu Modul (modul bebas)
-- [ ] Modul yang dipanggil sebuah course **tidak** muncul di `/modules`, dan URL langsungnya 404.
+- [ ] Modul yang dipanggil sebuah course **tidak** muncul di daftar `/modules`, tapi halaman babnya tetap terbuka untuk peserta course-nya (langkah bab di Perjalanan menautkan ke sana); karyawan yang tidak mendaftar course itu → 403.
 - [ ] Tanpa modul bebas: keadaan kosong "Belum ada bacaan bebas" + tautan ke Course.
 - [ ] Kuis bab modul bebas: boleh dikerjakan kapan saja, hasilnya **tidak** menambah sesi harian, streak, atau bonus sesi lengkap (dihitung sebagai latihan ulang).
 
